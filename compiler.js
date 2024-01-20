@@ -16,7 +16,7 @@ userInput.addEventListener('keydown', (event) => {
     }
 });
 
-async function sendMessage() {
+function sendMessage() {
     const userMessage = userInput.value.trim();
     if (userMessage === '') {
         // Do not proceed if the user input is empty
@@ -24,40 +24,12 @@ async function sendMessage() {
     }
 
     userInput.value = ''; // Clear the input field
-    displayMessage(' ' + userMessage, true);
+    displayMessage('Compile the code with sample inputs: ' + userMessage, true);
 
-    // Make a request to OpenAI GPT-3 API
-    try {
-        const response = await callOpenAIAPI(userMessage);
-        const chatGPTReply = response.choices && response.choices.length > 0 ? response.choices[0].text.trim() : 'Unexpected response';
-        displayMessage(chatGPTReply);
-    } catch (error) {
-        console.error('Error calling OpenAI API:', error);
-        displayMessage('An error occurred while processing your request. Please try again later.');
-    }
-}
-
-async function callOpenAIAPI(userMessage) {
-    const apiKey = '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'; // Replace with your actual OpenAI API key
-    const apiUrl = 'https://api.openai.com/v1/engines/text-davinci-003/completions'; // Adjust endpoint if needed
-
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-    };
-
-    const data = {
-        prompt: ` ${userMessage}`,
-        max_tokens: 150,
-    };
-
-    const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(data),
-    });
-
-    return response.json();
+    setTimeout(() => {
+        const sampleReply = generateSampleReply(userMessage);
+        displayMessage(sampleReply);
+    }, 1000);
 }
 
 function displayMessage(message, isUserMessage = false) {
@@ -66,4 +38,16 @@ function displayMessage(message, isUserMessage = false) {
     messageElement.classList.add('message', isUserMessage ? 'user-message' : 'chatgpt-message');
     chatHistory.appendChild(messageElement);
     chatHistory.scrollTop = chatHistory.scrollHeight; // Auto-scroll to bottom
+}
+
+function generateSampleReply(userMessage) {
+    const sampleReplies = [
+        "That's interesting! Tell me more.",
+        "I'm not sure I understand. Can you rephrase that?",
+        "I'm still learning, but I'll try my best to answer your question.",
+        "Let me think about that for a moment.",
+        "I'm curious to know what you think about that.",
+    ];
+    const randomIndex = Math.floor(Math.random() * sampleReplies.length);
+    return sampleReplies[randomIndex];
 }
